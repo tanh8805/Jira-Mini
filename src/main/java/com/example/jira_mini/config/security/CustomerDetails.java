@@ -1,0 +1,53 @@
+package com.example.jira_mini.config.security;
+
+import com.example.jira_mini.entity.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.*;
+import java.io.*;
+
+@RequiredArgsConstructor
+@Getter
+public class CustomerDetails implements UserDetails {
+  private final User user;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority("ROLE" +  user.getRole()));
+  }
+
+  @Override
+  public @Nullable String getPassword() {
+    return "";
+  }
+
+  @Override
+  public String getUsername() {
+    return "";
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
+}
