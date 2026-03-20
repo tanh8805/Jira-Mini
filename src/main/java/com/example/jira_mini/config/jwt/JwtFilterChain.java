@@ -30,10 +30,10 @@ public class JwtFilterChain extends OncePerRequestFilter {
     String token = authHeader.substring(7);
     try{
       if(!jwtService.isTokenExpired(token)) {
-        String userId = jwtService.extractEmail(token);
+        String email = jwtService.extractEmail(token);
         String role =  jwtService.extractRole(token);
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     }

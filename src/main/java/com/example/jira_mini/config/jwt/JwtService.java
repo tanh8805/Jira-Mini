@@ -27,9 +27,9 @@ public class JwtService {
       throw new IllegalArgumentException("Invalid username or password");
     }
     Map<String, Object> claims = new HashMap<>();
-    claims.put("role", authentication.getAuthorities());
+    String role = authentication.getAuthorities().iterator().next().getAuthority();
     return Jwts.builder()
-            .setClaims(claims)
+            .claim("role", role)
             .setSubject(userDetails.getUser().getEmail())
             .signWith(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()), SignatureAlgorithm.HS256)
             .setIssuedAt(new Date())
