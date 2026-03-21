@@ -24,6 +24,12 @@ public class JwtFilterChain extends OncePerRequestFilter {
   private final TokenBlacklistService backlistService;
 
   @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    String path = request.getRequestURI();
+    return path.startsWith("/api/auth/");
+  }
+
+  @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String authHeader = request.getHeader("Authorization");
     if(authHeader == null || !authHeader.startsWith("Bearer ")) {

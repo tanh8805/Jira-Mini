@@ -1,6 +1,7 @@
 package com.example.jira_mini.controller.Auth;
 
 import com.example.jira_mini.config.jwt.JwtService;
+import com.example.jira_mini.dto.ResponseMessage;
 import com.example.jira_mini.service.Auth.TokenBlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class LogoutController {
     String authHeader = request.getHeader("Authorization");
 
     if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-      return ResponseEntity.badRequest().body("No token");
+      return ResponseEntity.badRequest().body(ResponseMessage.builder().message("No token!").build());
     }
 
     String token = authHeader.substring(7);
@@ -35,6 +36,6 @@ public class LogoutController {
       blacklistService.blacklistToken(token, ttl);
     }
 
-    return ResponseEntity.ok("Logout success");
+    return ResponseEntity.ok(ResponseMessage.builder().message("Logout success!").build());
   }
 }

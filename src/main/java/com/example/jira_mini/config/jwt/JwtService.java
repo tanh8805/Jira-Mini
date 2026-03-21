@@ -98,6 +98,7 @@ public class JwtService {
     try {
       return extractExpirationRefreshToken(token).before(new Date());
     } catch (Exception e) {
+      System.out.println("🔴 Refresh token error: " + e.getMessage());
       return true;
     }
   }
