@@ -1,5 +1,6 @@
 package com.example.jira_mini.service.Project;
 
+import com.example.jira_mini.dto.Project.ProjectResponse;
 import com.example.jira_mini.entity.Project;
 import com.example.jira_mini.entity.ProjectMember;
 import com.example.jira_mini.entity.User;
@@ -30,14 +31,12 @@ public class ProjectService {
   // 1. Lấy danh sách project mà user (theo email) là thành viên
   // =========================================================
   @Transactional(readOnly = true)
-  public List<Project> getProjectsByUserEmail(String email) {
+  public List<ProjectResponse> getProjectsByUserEmail(String email) {
     User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
 
-    return projectMemberRepository.findByUserId(user.getId())
-            .stream()
-            .map(ProjectMember::getProject)
-            .toList();
+    return projectMemberRepository.findProjectsByUserId(user.getId());
+
   }
 
   // =========================================================

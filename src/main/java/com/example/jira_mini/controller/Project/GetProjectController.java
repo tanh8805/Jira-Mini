@@ -1,5 +1,6 @@
 package com.example.jira_mini.controller.Project;
 
+import com.example.jira_mini.dto.Project.ProjectResponse;
 import com.example.jira_mini.entity.Project;
 import com.example.jira_mini.service.Project.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class GetProjectController {
   @GetMapping
   public ResponseEntity<?> getMyProjects(Authentication authentication) {
     String email = authentication.getName();
-    List<Project> projects = projectService.getProjectsByUserEmail(email);
+    List<ProjectResponse> projects = projectService.getProjectsByUserEmail(email);
     return ResponseEntity.ok(projects);
   }
 }

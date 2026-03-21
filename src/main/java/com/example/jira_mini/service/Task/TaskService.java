@@ -73,6 +73,7 @@ public class TaskService {
             .status(TaskStatus.TODO)
             .priority(request.getPriority())
             .assignee(assignee)
+            .createdBy(currentUser)
             .build();
 
     Task savedTask = taskRepository.save(task);

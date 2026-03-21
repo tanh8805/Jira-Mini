@@ -29,6 +29,10 @@ public class Task {
   @JoinColumn(name = "assignee_id")
   private User assignee;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "created_by", nullable = false)
+  private User createdBy;
+
   @Column(nullable = false)
   private String title;
 
