@@ -57,6 +57,27 @@ public class GlobalExceptionHandler {
             .body(ErrorMessage.builder().status(403).message(ex.getMessage()).build());
   }
 
+  @ExceptionHandler(TaskNotFoundException.class)
+  public ResponseEntity<ErrorMessage> handleTaskNotFound(TaskNotFoundException ex) {
+    return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorMessage.builder().status(404).message(ex.getMessage()).build());
+  }
+
+  @ExceptionHandler(TaskNotInProjectException.class)
+  public ResponseEntity<ErrorMessage> handleTaskNotInProject(TaskNotInProjectException ex) {
+    return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorMessage.builder().status(404).message(ex.getMessage()).build());
+  }
+
+  @ExceptionHandler(AssigneeNotMemberException.class)
+  public ResponseEntity<ErrorMessage> handleAssigneeNotMember(AssigneeNotMemberException ex) {
+    return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorMessage.builder().status(400).message(ex.getMessage()).build());
+  }
+
   // 500 — fallback cho mọi lỗi chưa được handle
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorMessage> handleGeneral(Exception ex) {

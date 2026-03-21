@@ -1,6 +1,8 @@
 package com.example.jira_mini.repository;
 
+import com.example.jira_mini.entity.Project;
 import com.example.jira_mini.entity.ProjectMember;
+import com.example.jira_mini.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,6 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UU
   Optional<ProjectMember> findByProjectIdAndUserId(UUID projectId, UUID userId);
 
   List<ProjectMember> findByUserId(UUID id);
+
+  boolean existsByProjectAndUser(Project project, User user);
 }
