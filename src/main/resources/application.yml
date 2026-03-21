@@ -1,22 +1,13 @@
 spring:
   application:
     name: jira-mini
-  datasource:
-    url: jdbc:postgresql://localhost:5432/jira-db
-    username: tuananh
-    password: 123
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
 
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 900000
-  secret_refresh_token: 5A7134743777217A25432A462D4A614E645267556B58703273357638792F423F
-  expiration-refresh-token: 604800000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  secret_refresh_token: ${JWT_SECRET_REFRESH_TOKEN}
+  expiration-refresh-token: ${JWT_EXPIRATION_REFRESH_TOKEN}
