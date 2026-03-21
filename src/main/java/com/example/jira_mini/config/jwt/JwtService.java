@@ -96,13 +96,13 @@ public class JwtService {
   }
   public boolean isRefreshTokenExpired(String token) {
     try {
-      return extractExpiration(token).before(new Date());
+      return extractExpirationRefreshToken(token).before(new Date());
     } catch (Exception e) {
       return true;
     }
   }
   public String extractUserIdFromRefreshToken(String token) {
-    return extractAllClaims(token).getSubject();
+    return extractRefreshClaims(token).getSubject();
   }
   public String generateAccessTokenFromUser(String email, String role) {
     return Jwts.builder()

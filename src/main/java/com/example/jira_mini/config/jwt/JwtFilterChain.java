@@ -45,12 +45,18 @@ public class JwtFilterChain extends OncePerRequestFilter {
         response.getWriter().write("{\"message\":\"Token is blacklisted\"}");
         return;
       }
-      String email = jwtService.extractEmail(token);
-      String role =  jwtService.extractRole(token);
-      List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-      UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+      if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        String email = jwtService.extractEmail(token);
+        String role = jwtService.extractRole(token);
 
+        List<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority(role));
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(email, null, authorities);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+      }
     }
     catch (ExpiredJwtException ex){
       response.setContentType("application/json");

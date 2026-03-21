@@ -31,6 +31,6 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleGeneralException(Exception ex) {
-    return ResponseEntity.status(500).body(ErrorMessage.builder().message("Internal Server Error").status(500).build());
+    return ResponseEntity.status(500).body(ErrorMessage.builder().message("Internal Server Error:" + ex.getMessage()).status(500).build());
   }
 }

@@ -15,7 +15,7 @@ public class RegisterService {
 
   public void register(String email, String password, String fullName) {
     if (userRepository.existsByEmail(email)) {
-      throw new EmailAlreadyExistsException("Email " + email + " đã được sử dụng. Vui lòng chọn email khác!");
+      throw new EmailAlreadyExistsException("Email " + email + " in use. Please use another one.!");
     }
     String passwordHash = passwordEncoder.encode(password);
     User user = User.builder().email(email).passwordHash(passwordHash).fullName(fullName).build();
