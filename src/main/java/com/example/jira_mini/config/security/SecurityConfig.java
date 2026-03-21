@@ -1,5 +1,7 @@
 package com.example.jira_mini.config.security;
 
+import com.example.jira_mini.config.jwt.JwtFilterChain;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,13 +11,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.*;
 import java.io.*;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+  private final AuthenticationConfiguration authenticationConfiguration;
+  private final JwtFilterChain jwtFilterChain;
   @Bean
   public PasswordEncoder passwordEncoder(){
     return new BCryptPasswordEncoder();
@@ -31,7 +37,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/auth/**").permitAll()
                     .anyRequest().authenticated()
-            );
+            )
+            .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 }

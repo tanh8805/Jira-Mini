@@ -29,7 +29,6 @@ public class User {
   private String fullName;
 
   @Enumerated(EnumType.STRING)
-  @Builder.Default
   private SystemRole role;
 
   @Column(name = "created_at", updatable = false)
