@@ -7,6 +7,7 @@ import com.example.jira_mini.entity.ProjectMember;
 import com.example.jira_mini.entity.User;
 import com.example.jira_mini.entity.enums.ProjectRole;
 import com.example.jira_mini.exception.MemberAlreadyExistsException;
+import com.example.jira_mini.exception.MemberNotFoundException;
 import com.example.jira_mini.exception.ProjectNotFoundException;
 import com.example.jira_mini.exception.UnauthorizedProjectAccessException;
 import com.example.jira_mini.exception.UserNotFoundException;
@@ -35,7 +36,6 @@ public class ProjectService {
   public List<ProjectResponse> getProjectsByUserEmail(String email) {
     User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-
     return projectMemberRepository.findProjectsByUserId(user.getId());
   }
 
@@ -62,7 +62,6 @@ public class ProjectService {
             .build();
 
     projectMemberRepository.save(ownerMember);
-
     return saved;
   }
 
@@ -80,12 +79,8 @@ public class ProjectService {
       throw new UnauthorizedProjectAccessException("Only OWNER can update the project");
     }
 
-    if (name != null && !name.isBlank()) {
-      project.setName(name);
-    }
-    if (description != null) {
-      project.setDescription(description);
-    }
+    if (name != null && !name.isBlank()) project.setName(name);
+    if (description != null) project.setDescription(description);
 
     return projectRepository.save(project);
   }
@@ -108,9 +103,7 @@ public class ProjectService {
             .orElseThrow(() -> new UserNotFoundException("User not found with email: " + memberEmail));
 
     projectMemberRepository.findByProjectIdAndUserId(projectId, newUser.getId())
-            .ifPresent(m -> {
-              throw new MemberAlreadyExistsException(memberEmail);
-            });
+            .ifPresent(m -> { throw new MemberAlreadyExistsException(memberEmail); });
 
     ProjectMember member = ProjectMember.builder()
             .project(project)
@@ -129,13 +122,74 @@ public class ProjectService {
     if (!projectRepository.existsById(projectId)) {
       throw new ProjectNotFoundException(projectId);
     }
-
     getMemberOrThrow(projectId, requesterEmail);
-
     return projectMemberRepository.findMembersByProjectId(projectId);
   }
 
-  // Helper
+  // =========================================================
+  // 6. Xoá thành viên khỏi project
+  //
+  //    Rules:
+  //    - Self-leave: MANAGER/MEMBER được, OWNER KHÔNG được
+  //    - OWNER: xoá được MANAGER và MEMBER
+  //    - MANAGER: chỉ xoá được MEMBER
+  //    - MEMBER: không xoá được người khác
+  // =========================================================
+  @Transactional
+  public void removeMember(UUID projectId, UUID targetUserId, String requesterEmail) {
+    if (!projectRepository.existsById(projectId)) {
+      throw new ProjectNotFoundException(projectId);
+    }
+
+    ProjectMember requester = getMemberOrThrow(projectId, requesterEmail);
+
+    ProjectMember target = projectMemberRepository.findByProjectIdAndUserId(projectId, targetUserId)
+            .orElseThrow(() -> new MemberNotFoundException("Member not found in this project"));
+
+    boolean isSelf = requester.getId().equals(target.getId());
+
+    if (isSelf) {
+      // OWNER không được tự rời — phải transfer ownership trước
+      if (requester.getRole() == ProjectRole.OWNER) {
+        throw new UnauthorizedProjectAccessException(
+                "OWNER cannot leave the project. Transfer ownership first.");
+      }
+      // MANAGER / MEMBER tự rời: cho phép
+    } else {
+      // Xoá người khác
+      if (requester.getRole() == ProjectRole.MEMBER) {
+        throw new UnauthorizedProjectAccessException("MEMBER cannot remove other members");
+      }
+      if (requester.getRole() == ProjectRole.MANAGER && target.getRole() != ProjectRole.MEMBER) {
+        throw new UnauthorizedProjectAccessException("MANAGER can only remove MEMBER");
+      }
+      // OWNER xoá bất kỳ: cho phép
+    }
+
+    projectMemberRepository.delete(target);
+  }
+
+  // =========================================================
+  // 7. Xoá project — chỉ OWNER
+  //    Tasks & members bị cascade delete bởi DB (ON DELETE CASCADE)
+  // =========================================================
+  @Transactional
+  public void deleteProject(UUID projectId, String requesterEmail) {
+    Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ProjectNotFoundException(projectId));
+
+    ProjectMember requester = getMemberOrThrow(projectId, requesterEmail);
+
+    if (requester.getRole() != ProjectRole.OWNER) {
+      throw new UnauthorizedProjectAccessException("Only OWNER can delete the project");
+    }
+
+    projectRepository.delete(project);
+  }
+
+  // =========================================================
+  // Helper: lấy ProjectMember hoặc throw nếu không phải member
+  // =========================================================
   private ProjectMember getMemberOrThrow(UUID projectId, String email) {
     User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
