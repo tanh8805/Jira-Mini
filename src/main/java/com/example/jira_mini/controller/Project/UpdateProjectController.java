@@ -3,6 +3,10 @@ package com.example.jira_mini.controller.Project;
 import com.example.jira_mini.dto.Project.UpdateProjectRequest;
 import com.example.jira_mini.entity.Project;
 import com.example.jira_mini.service.Project.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +22,18 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
+@Tag(name = "Project", description = "Quản lý project")
 public class UpdateProjectController {
 
     private final ProjectService projectService;
 
     @PutMapping("/{projectId}")
+    @Operation(summary = "Cập nhật project")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cập nhật thành công"),
+            @ApiResponse(responseCode = "403", description = "Không phải OWNER"),
+            @ApiResponse(responseCode = "404", description = "Project hoặc User không tồn tại")
+    })
     public ResponseEntity<?> updateProject(
             @PathVariable UUID projectId,
             Authentication authentication,

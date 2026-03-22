@@ -3,6 +3,10 @@ package com.example.jira_mini.controller.Auth;
 import com.example.jira_mini.config.jwt.JwtService;
 import com.example.jira_mini.dto.ResponseMessage;
 import com.example.jira_mini.service.Auth.TokenBlacklistService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +19,17 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Quản lý Auth")
 public class LogoutController {
   private final TokenBlacklistService blacklistService;
   private final JwtService jwtService;
 
   @PostMapping("/logout")
+  @Operation(summary = "Đăng xuất")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "Đăng xuất thành công"),
+          @ApiResponse(responseCode = "400", description = "Không có token")
+  })
   public ResponseEntity<?> logout(HttpServletRequest request) {
     String authHeader = request.getHeader("Authorization");
 

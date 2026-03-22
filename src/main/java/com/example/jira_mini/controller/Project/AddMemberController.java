@@ -3,6 +3,10 @@ package com.example.jira_mini.controller.Project;
 import com.example.jira_mini.dto.Project.AddMemberRequest;
 import com.example.jira_mini.entity.ProjectMember;
 import com.example.jira_mini.service.Project.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +22,19 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
+@Tag(name = "Project", description = "Quản lý project")
 public class AddMemberController {
 
   private final ProjectService projectService;
 
   @PostMapping("/{projectId}/members")
+  @Operation(summary = "Thêm thành viên vào project")
+  @ApiResponses({
+          @ApiResponse(responseCode = "201", description = "Thêm thành công"),
+          @ApiResponse(responseCode = "403", description = "Không đủ quyền"),
+          @ApiResponse(responseCode = "404", description = "Project hoặc User không tồn tại"),
+          @ApiResponse(responseCode = "409", description = "User đã là thành viên")
+  })
   public ResponseEntity<?> addMember(
           @PathVariable UUID projectId,
           Authentication authentication,

@@ -8,6 +8,10 @@ import com.example.jira_mini.exception.UserNotFoundException;
 import com.example.jira_mini.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +24,18 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Quản lý Auth")
 public class RefreshController {
   private final JwtService jwtService;
   private final UserRepository userRepository;
 
   @PostMapping("/refresh")
+  @Operation(summary = "cấp access token")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "Cấp thành công"),
+          @ApiResponse(responseCode = "401", description = "Token hết hạn"),
+          @ApiResponse(responseCode = "404", description = "Không tìm thấy user")
+  })
   public ResponseEntity<?> refreshToken(HttpServletRequest request) {
     String authHeader = request.getHeader("Authorization");
 
