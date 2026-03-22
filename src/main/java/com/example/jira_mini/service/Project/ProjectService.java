@@ -1,5 +1,6 @@
 package com.example.jira_mini.service.Project;
 
+import com.example.jira_mini.dto.Project.MemberResponse;
 import com.example.jira_mini.dto.Project.ProjectResponse;
 import com.example.jira_mini.entity.Project;
 import com.example.jira_mini.entity.ProjectMember;
@@ -36,7 +37,6 @@ public class ProjectService {
             .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
 
     return projectMemberRepository.findProjectsByUserId(user.getId());
-
   }
 
   // =========================================================
@@ -121,6 +121,21 @@ public class ProjectService {
     return projectMemberRepository.save(member);
   }
 
+  // =========================================================
+  // 5. Lấy danh sách thành viên của project
+  // =========================================================
+  @Transactional(readOnly = true)
+  public List<MemberResponse> getProjectMembers(UUID projectId, String requesterEmail) {
+    if (!projectRepository.existsById(projectId)) {
+      throw new ProjectNotFoundException(projectId);
+    }
+
+    getMemberOrThrow(projectId, requesterEmail);
+
+    return projectMemberRepository.findMembersByProjectId(projectId);
+  }
+
+  // Helper
   private ProjectMember getMemberOrThrow(UUID projectId, String email) {
     User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));

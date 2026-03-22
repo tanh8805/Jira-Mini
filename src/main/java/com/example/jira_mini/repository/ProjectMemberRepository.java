@@ -1,5 +1,6 @@
 package com.example.jira_mini.repository;
 
+import com.example.jira_mini.dto.Project.MemberResponse;
 import com.example.jira_mini.dto.Project.ProjectResponse;
 import com.example.jira_mini.entity.Project;
 import com.example.jira_mini.entity.ProjectMember;
@@ -39,6 +40,18 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UU
     """)
   List<ProjectResponse> findProjectsByUserId(@Param("userId") UUID userId);
 
+  @Query("""
+            SELECT new com.example.jira_mini.dto.Project.MemberResponse(
+                u.id,
+                u.email,
+                u.fullName,
+                pm.role
+            )
+            FROM ProjectMember pm
+            JOIN pm.user u
+            WHERE pm.project.id = :projectId
+        """)
+  List<MemberResponse> findMembersByProjectId(@Param("projectId") UUID projectId);
 
   boolean existsByProjectAndUser(Project project, User user);
 }
