@@ -194,6 +194,7 @@ public class ProjectService {
       throw new UnauthorizedProjectAccessException("Only OWNER can delete the project");
     }
 
+    projectMemberRepository.deleteAllByProjectId(projectId);
     projectRepository.delete(project);
   }
 
