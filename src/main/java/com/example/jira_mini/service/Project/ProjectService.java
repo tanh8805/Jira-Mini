@@ -123,7 +123,17 @@ public class ProjectService {
       throw new ProjectNotFoundException(projectId);
     }
     getMemberOrThrow(projectId, requesterEmail);
-    return projectMemberRepository.findMembersByProjectId(projectId);
+
+    return projectMemberRepository.findByProjectId(projectId)
+            .stream()
+            .map(pm -> new MemberResponse(
+                    pm.getUser().getId(),
+                    pm.getUser().getEmail(),
+                    pm.getUser().getFullName(),
+                    pm.getRole(),
+                    pm.getJoinedAt()
+            ))
+            .toList();
   }
 
   // =========================================================

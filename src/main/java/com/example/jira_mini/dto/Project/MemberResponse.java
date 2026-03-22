@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -18,5 +19,5 @@ public class MemberResponse {
   private String email;
   private String fullName;
   private ProjectRole role;
-  private LocalDateTime joinedAt;
+  private OffsetDateTime joinedAt;
 }

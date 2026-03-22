@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -33,10 +34,10 @@ public class ProjectMember {
   private ProjectRole role;
 
   @Column(name = "joined_at", updatable = false)
-  private LocalDateTime joinedAt;
+  private OffsetDateTime  joinedAt;
 
   @PrePersist
   public void prePersist() {
-    joinedAt = LocalDateTime.now();
+    joinedAt = OffsetDateTime.now();
   }
 }

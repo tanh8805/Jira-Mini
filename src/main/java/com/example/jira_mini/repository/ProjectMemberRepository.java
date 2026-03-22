@@ -40,20 +40,8 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UU
     """)
   List<ProjectResponse> findProjectsByUserId(@Param("userId") UUID userId);
 
-  @Query("""
-            SELECT new com.example.jira_mini.dto.Project.MemberResponse(
-                u.id,
-                u.email,
-                u.fullName,
-                pm.role,
-                pm.joinedAt
-            )
-            FROM ProjectMember pm
-            JOIN pm.user u
-            WHERE pm.project.id = :projectId
-            ORDER BY pm.joinedAt ASC
-        """)
-  List<MemberResponse> findMembersByProjectId(@Param("projectId") UUID projectId);
+  @EntityGraph(attributePaths = {"user"})
+  List<ProjectMember> findByProjectId(UUID projectId);
 
   boolean existsByProjectAndUser(Project project, User user);
 }
