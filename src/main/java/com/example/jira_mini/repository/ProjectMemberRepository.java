@@ -45,11 +45,13 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UU
                 u.id,
                 u.email,
                 u.fullName,
-                pm.role
+                pm.role,
+                pm.joinedAt
             )
             FROM ProjectMember pm
             JOIN pm.user u
             WHERE pm.project.id = :projectId
+            ORDER BY pm.joinedAt ASC
         """)
   List<MemberResponse> findMembersByProjectId(@Param("projectId") UUID projectId);
 

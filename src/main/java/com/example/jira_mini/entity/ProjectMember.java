@@ -31,4 +31,12 @@ public class ProjectMember {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private ProjectRole role;
+
+  @Column(name = "joined_at", updatable = false)
+  private LocalDateTime joinedAt;
+
+  @PrePersist
+  public void prePersist() {
+    joinedAt = LocalDateTime.now();
+  }
 }

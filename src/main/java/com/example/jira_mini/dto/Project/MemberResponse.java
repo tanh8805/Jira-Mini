@@ -18,4 +18,5 @@ public class MemberResponse {
   private String email;
   private String fullName;
   private ProjectRole role;
+  private LocalDateTime joinedAt;
 }
