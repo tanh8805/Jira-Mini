@@ -40,8 +40,5 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, UU
     """)
   List<ProjectResponse> findProjectsByUserId(@Param("userId") UUID userId);
 
-  @EntityGraph(attributePaths = {"user"})
-  List<ProjectMember> findByProjectId(UUID projectId);
-
   boolean existsByProjectAndUser(Project project, User user);
 }
